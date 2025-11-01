@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction to Chemistry | Interactive Lesson</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #e1f5fe, #fce4ec);
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+
+    header {
+      background-color: #0288d1;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    section {
+      max-width: 800px;
+      margin: 30px auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+      padding: 25px;
+    }
+
+    button {
+      background: #0288d1;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
+    button:hover {
+      background: #01579b;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .question {
+      margin-bottom: 15px;
+    }
+
+    input {
+      padding: 8px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+
+    .result {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    footer {
+      text-align: center;
+      color: #555;
+      margin: 40px 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🔬 Introduction to Chemistry</h1>
+    <p>Interactive Lesson for SSS 1 Students | By: Oluseun Odulano</p>
+  </header>
+
+  <section id="intro">
+    <h2>✨ Welcome to Chemistry!</h2>
+    <p>Chemistry is the branch of science that studies the composition, structure, properties, and changes of matter. It helps us understand everything around us — from the air we breathe to the food we eat!</p>
+    <button onclick="nextSection('objectives')">Start Lesson</button>
+  </section>
+
+  <section id="objectives" class="hidden">
+    <h2>🎯 Learning Objectives</h2>
+    <ul>
+      <li>Define chemistry and its importance in everyday life.</li>
+      <li>Identify different branches of chemistry.</li>
+      <li>List some careers that require chemistry knowledge.</li>
+      <li>Recognize basic laboratory apparatus and safety rules.</li>
+    </ul>
+    <button onclick="nextSection('branches')">Next</button>
+  </section>
+
+  <section id="branches" class="hidden">
+    <h2>🌿 Branches of Chemistry</h2>
+    <ul>
+      <li><b>Organic Chemistry</b> – studies carbon compounds like fuels, plastics, and drugs.</li>
+      <li><b>Inorganic Chemistry</b> – studies non-carbon compounds like salts and minerals.</li>
+      <li><b>Physical Chemistry</b> – explains how matter behaves using physics and math.</li>
+      <li><b>Analytical Chemistry</b> – focuses on identifying substances in a sample.</li>
+      <li><b>Biochemistry</b> – explores chemical processes in living things.</li>
+    </ul>
+    <button onclick="nextSection('safety')">Next</button>
+  </section>
+
+  <section id="safety" class="hidden">
+    <h2>🧯 Laboratory Safety Rules</h2>
+    <p>Before conducting experiments, it’s important to stay safe! Here are some rules:</p>
+    <ul>
+      <li>Always wear protective clothing (lab coat, goggles, gloves).</li>
+      <li>Never taste or directly smell chemicals.</li>
+      <li>Handle acids and bases carefully.</li>
+      <li>Know the location of safety equipment (fire extinguisher, eyewash station).</li>
+    </ul>
+    <button onclick="nextSection('quiz')">Take Quiz</button>
+  </section>
+
+  <section id="quiz" class="hidden">
+    <h2>🧩 Quick Quiz</h2>
+    <div id="quiz-questions"></div>
+    <button id="submitQuizBtn">Submit Quiz</button>
+    <p id="score" class="result"></p>
+  </section>
+
+  <section id="conclusion" class="hidden">
+    <h2>💡 Summary</h2>
+    <p>Chemistry helps us understand the world at a molecular level. It connects with other sciences like biology and physics and plays a role in medicine, agriculture, and technology.</p>
+    <p>Great work completing the lesson! 🎉</p>
+  </section>
+
+  <footer>© 2025 Chemistry with Oluseun | Interactive Science Learning</footer>
+
+  <script>
+    const quizData = [
+      { q: '1. What is the study of matter and its changes called?', a: 'chemistry' },
+      { q: '2. Which branch of chemistry studies carbon compounds?', a: 'organic chemistry' },
+      { q: '3. What should you wear to protect your body in the lab?', a: 'lab coat' },
+      { q: '4. Name one safety rule in the chemistry lab.', a: 'wear goggles' },
+      { q: '5. Which branch studies chemical reactions in living things?', a: 'biochemistry' }
+    ];
+
+    let quizLoaded = false;
+
+    function nextSection(id) {
+      document.querySelectorAll('section').forEach(sec => sec.classList.add('hidden'));
+      const sec = document.getElementById(id);
+      if (!sec) return;
+
+      // If user navigates to the quiz, ensure quiz inputs are loaded before showing
+      if (id === 'quiz') {
+        if (!quizLoaded) loadQuiz();
+      }
+
+      sec.classList.remove('hidden');
+    }
+
+    function loadQuiz() {
+      const quizContainer = document.getElementById('quiz-questions');
+      // clear previous content (safe to call multiple times)
+      quizContainer.innerHTML = '';
+
+      quizData.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'question';
+        div.innerHTML = `
+          <p>${item.q}</p>
+          <input type="text" id="q${i}" placeholder="Type your answer here">
+        `;
+        quizContainer.appendChild(div);
+      });
+
+      // Attach event listener for submit button only once
+      const submitBtn = document.getElementById('submitQuizBtn');
+      if (!submitBtn.dataset.bound) {
+        submitBtn.addEventListener('click', gradeQuiz);
+        submitBtn.dataset.bound = 'true';
+      }
+
+      quizLoaded = true;
+    }
+
+    function gradeQuiz() {
+      // Defensive check: ensure inputs exist
+      let allExists = true;
+      for (let i = 0; i < quizData.length; i++) {
+        if (!document.getElementById(`q${i}`)) {
+          allExists = false;
+          break;
+        }
+      }
+
+      if (!allExists) {
+        // If inputs are missing, load them and show the quiz section, then ask user to submit again
+        loadQuiz();
+        nextSection('quiz');
+        alert('Quiz inputs were not present. The quiz has been loaded — please complete it and press Submit again.');
+        return;
+      }
+
+      let score = 0;
+      quizData.forEach((item, i) => {
+        const el = document.getElementById(`q${i}`);
+        const ans = (el && el.value) ? el.value.trim().toLowerCase() : '';
+        if (ans.includes(item.a)) score++;
+      });
+
+      const message =
+        score >= 4 ? '🌟 Excellent work!' :
+        score >= 2 ? '👍 Good job, but you can review again.' :
+        '💪 Keep practicing to understand better!';
+
+      document.getElementById('score').innerHTML = `Your Score: ${score}/5<br>${message}`;
+      setTimeout(() => nextSection('conclusion'), 5000);
+    }
+
+    // Load quiz into memory (but don't show it) to ensure inputs exist in most environments
+    // We won't auto-show the quiz — user must navigate there. However, keep this call commented
+    // so we don't clutter the DOM before needed. If you prefer inputs preloaded, uncomment the line below.
+    // loadQuiz();
+  </script>
+</body>
+</html>
